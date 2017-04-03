@@ -41,7 +41,7 @@ ylabel('$x_2$','Interpreter','latex','FontSize',12);
 title('Predicted solution trajectory','Interpreter','latex','FontSize',12);
 legend([pl11,pl12],{['Samples (',num2str(size(fsmp,1)),' generated)'],...
     'Predicted solution'},...
-    'Interpreter','latex','FontSize',12);
+    'Interpreter','latex','FontSize',10);
 axis([pc.lb(1),pc.ub(1),pc.lb(2),pc.ub(2)]);
 axes(fh2);
 xlabel('$x_1$','Interpreter','latex','FontSize',12);
@@ -57,7 +57,7 @@ axes(fh4);
 xlabel('iteration','Interpreter','latex','FontSize',12);
 ylabel('distance','Interpreter','latex','FontSize',12);
 legend([pl41],{'$||x_{\mathrm{predicted}} - x_{\mathrm{true}}||$'},...
-    'Interpreter','latex','FontSize',12);
+    'Interpreter','latex','FontSize',10);
 title('Distance to true solution','Interpreter','latex','FontSize',12);
 axes(fh5);
 xlabel('iteration','Interpreter','latex','FontSize',12);
