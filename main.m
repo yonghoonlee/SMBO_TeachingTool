@@ -5,13 +5,20 @@
 % Main Script
 %==========================================================================
 
-clear; clc; close all; rng(100); path(path,fullfile(pwd,'export_fig'));
+clear; clc; close all; rng(100);
+restoredefaultpath; path(path,fullfile(pwd,'export_fig'));
 
-% User defined settings and parameters
-prob = 'McCormickFn';       % Problem directory name
+% Problem to be solved
+prob = 'McCormickFn';       % PROBLEM DIRECTORY NAME
+                            % Use one of following predefined problems:
                             %   prob = 'McCormickFn';
                             %   prob = 'SphereFn';
                             %   prob = 'GoldsteinPriceFn';
+                            % Or you can easily generate your own problem
+                            % by creating a directory and put objective and
+                            % configuration files: 'obj.m' & 'conf.m'
+
+% Other user defined settings and parameters
 export_plot = true;         % Export plot file
 maxiter = 20;               % Number of maximum iteration
 n_sample_g = 4;             % Number of global samples per each iteration
@@ -115,14 +122,7 @@ while (k <= maxiter)
     % Plot per each iteration
     plotfn_20;
     % Export plot?
-    if (export_plot == true)
-        % Exporting figure takes some time, so we do not pause here
-        eval(['export_fig ',...
-            fullfile(probpath,'plot_'),num2str(k),'.png -png -r300']);
-    else
-        % Without exporting figure, we need to pause to see the change here
-        pause(1);           % To see the change in real time, pause 1 sec.
-    end
+    plotfn_exp;
 %=== END: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ============
     
     % Next iteration

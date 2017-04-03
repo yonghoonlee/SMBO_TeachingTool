@@ -18,6 +18,7 @@ end
 plot(pc.xtrue(1),pc.xtrue(2),'o','MarkerFaceColor',[1 1 1],'Color','none');
 cbartrue = colorbar('east');
 set(cbartrue,'Position',[0.56,0.2,0.01,0.25]);
+set(cbartrue,'Color',[1 1 1]);
 drawnow;
 %ctrlvl = get(ctrtrue,'LevelList');
 axis([pc.lb(1),pc.ub(1),pc.lb(2),pc.ub(2)]);

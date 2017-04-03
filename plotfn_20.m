@@ -10,6 +10,7 @@ axes(fh1);
 pl11 = plot(x_sample{k}(:,1),x_sample{k}(:,2),'x'); hold on;
 % Plot contours of the constructed RBF model
 axes(fh2);
+hold off;
 xv = linspace(pc.lb(1),pc.ub(1),101);
 yv = linspace(pc.lb(2),pc.ub(2),101);
 [XMG,YMG] = meshgrid(xv,yv);
@@ -22,6 +23,7 @@ plot(xopt(1),xopt(2),'o','MarkerFaceColor',[1 1 1],'Color','none');
 %set(ctrpred,'LevelList',ctrlvl);
 cbarpred = colorbar('east');
 set(cbarpred,'Position',[0.36,0.2,0.01,0.25]);
+set(cbarpred,'Color',[1 1 1]);
 % Plot optimal point
 axes(fh1);
 pl12 = plot(xopt(1),xopt(2),'ok');
