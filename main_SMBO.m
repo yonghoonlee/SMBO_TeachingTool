@@ -14,6 +14,7 @@ prob = 'McCormickFn';       % PROBLEM DIRECTORY NAME
                             %   prob = 'McCormickFn';
                             %   prob = 'SphereFn';
                             %   prob = 'GoldsteinPriceFn';
+                            %   prob = 'ScaledGoldsteinPriceFn';
                             % Or you can easily generate your own problem
                             % by creating a directory and put objective and
                             % configuration files: 'obj.m' & 'conf.m'
