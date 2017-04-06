@@ -22,8 +22,7 @@ prob = 'McCormickFn';       % PROBLEM DIRECTORY NAME
 % Other user defined settings and parameters
 export_plot = true;         % Export plot file
 maxiter = 20;               % Number of maximum iteration
-n_sample_g = 4;             % Number of global samples per each iteration
-n_sample_l = 4;             % Number of local samples per each iteration
+n_smp = 4;                  % Number of samples per each iteration
 fs_g = 0.8;                 % Shrink factor for global sample range
 m.sampling = 'LHS';         % Sampling method: LHS, FF, Random, User
 m.surrogate = 'TPS-RBF';    % Surrogate modeling method: TPS-RBF, User
@@ -64,19 +63,19 @@ while (k <= maxiter)
     % Generating samples in [0,1] space
     switch(m.sampling)
         case 'LHS'          % Latin hypercube sampling
-            xsmp01 = lhsdesign(n_sample_g, pc.nvar);
+            xsmp01 = lhsdesign(n_smp, pc.nvar);
         case 'FF'           % Full factorial sampling
-            xsmp01 = (fullfact(round(sqrt(n_sample_g))*ones(1,pc.nvar)) ...
-                - 1)/(round(sqrt(n_sample_g)) - 1);
+            xsmp01 = (fullfact(round(sqrt(n_smp))*ones(1,pc.nvar)) ...
+                - 1)/(round(sqrt(n_smp)) - 1);
         case 'Random'       % Random sampling
-            xsmp01 = rand(n_sample_g, pc.nvar);
+            xsmp01 = rand(n_smp, pc.nvar);
         case 'User'         % User-defined sampling method
             % Please write your own sampling method here:
             % xsamp = ...
     end
     % Scaling samples to fill the space of exploration
     xs_g = 2*(xsmp01 - 0.5); % Scale samples from [0,1] to [-1,1] space
-    xs_g = repmat(xopt,n_sample_g,1) + xs_g.*repmat(xrange,n_sample_g,1);
+    xs_g = repmat(xopt,n_smp,1) + xs_g.*repmat(xrange,n_smp,1);
     % Enforce samples within bounds
     for i = 1:pc.nvar       % For each design variable
         xsampcol = xs_g(:,i);
@@ -89,8 +88,8 @@ while (k <= maxiter)
     
     % ==== HIGH FIDELITY MODEL EVALUATION ====
     % Run objective function for each generated sample point
-    f_hf{k} = zeros(n_sample_g,1);
-    for i = 1:n_sample_g
+    f_hf{k} = zeros(n_smp,1);
+    for i = 1:n_smp
         f_hf{k}(i) = feval(objfn,x_sample{k}(i,:));
     end
     
