@@ -57,12 +57,12 @@ axes(fh4);
 xlabel('iteration','Interpreter','latex','FontSize',12);
 ylabel('distance','Interpreter','latex','FontSize',12);
 legend([pl41],{'$||x_{\mathrm{predicted}} - x_{\mathrm{true}}||$'},...
-    'Interpreter','latex','FontSize',10);
+    'Interpreter','latex','FontSize',10,'Location','northoutside');
 title('Distance to true solution','Interpreter','latex','FontSize',12);
 axes(fh5);
 xlabel('iteration','Interpreter','latex','FontSize',12);
 ylabel('error','Interpreter','latex','FontSize',12);
 legend([pl51,pl52],{'$||x_{\mathrm{predicted}} - x_{\mathrm{true}}||$',...
     '$||x_{\mathrm{predicted}} - x_{\mathrm{hi-fi\; fn}}||$'},...
-    'Interpreter','latex','FontSize',12);
+    'Interpreter','latex','FontSize',10,'Location','northoutside');
 title('Error','Interpreter','latex','FontSize',12);

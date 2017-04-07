@@ -2,15 +2,19 @@
 % A modular code for teaching Surrogate Modeling-Based Optimization
 % Author: Yong Hoon Lee (ylee196@illinois.edu)
 %==========================================================================
-% Main Script
+% Main Script for SMBO run
 %==========================================================================
 
-clear; clc; close all; rng(100);
+
+%% PREPARATION
+
+clear; close all; rng(100);
 restoredefaultpath; path(path,fullfile(pwd,'export_fig'));
 
 % Problem to be solved
-prob = 'McCormickFn';       % PROBLEM DIRECTORY NAME
+prob = 'ScaledGoldsteinPriceFn';          % PROBLEM DIRECTORY NAME
                             % Use one of following predefined problems:
+                            %   prob = 'AckleyFn';
                             %   prob = 'McCormickFn';
                             %   prob = 'SphereFn';
                             %   prob = 'GoldsteinPriceFn';
@@ -19,20 +23,30 @@ prob = 'McCormickFn';       % PROBLEM DIRECTORY NAME
                             % by creating a directory and put objective and
                             % configuration files: 'obj.m' & 'conf.m'
 
-% Other user defined settings and parameters
+% User parameter
 export_plot = true;         % Export plot file
+
+% Surrogate model-based optimization options
 maxiter = 20;               % Number of maximum iteration
 n_smp = 4;                  % Number of samples per each iteration
-fs_g = 0.8;                 % Shrink factor for global sample range
 m.sampling = 'LHS';         % Sampling method: LHS, FF, Random, User
 m.surrogate = 'TPS-RBF';    % Surrogate modeling method: TPS-RBF, User
 opt = optimoptions('ga');   % Genetic algorithm is used for minimization
 opt.Display = 'none';       % No display after GA run
 opt.UseVectorized = true;   % Vectorized evaluation on the surrogate model
 
+% Gradient-based optimization options (for comparison)
+optfminunc = optimoptions('fminunc');
+optfminunc.Display = 'none';
+optfminunc.FiniteDifferenceType = 'central';
+optfminunc.OptimalityTolerance = 1e-9;
+optfminunc.StepTolerance = 1e-9;
+optfminunc.MaxIterations = maxiter*n_smp;
+
 % Save current (parent) directory and problem (sub) directory paths
 currentpath = pwd;
 probpath = fullfile(currentpath,prob);
+
 % Get obj-fn handle from the problem path
 cd(probpath);               % Enter the problem directory
 objfn = str2func('obj');    % Obtain function handle for objective function
@@ -42,18 +56,22 @@ cd(currentpath);            % Return to the root directory
 % Problem configurations (number of variables, lower & upper bounds)
 pc = feval(conffn);
 
-% Assumption of solution for sample distribution
+% Assumption of solution (initial value) for sample distribution
 xrange = (pc.ub - pc.lb)/2; % Half of the design space
-xopt = pc.lb + xrange;      % Middle point between lower & upper bounds
-xtrue = pc.xtrue;
-ftrue = pc.ftrue;
+x0 = pc.lb + xrange;        % Middle point between lower & upper bounds
+xopt = x0;                  % First guess is equivalent to the init value
+
+% Retrieve trues soltuion for comparison
+xtrue = pc.xtrue;           % True solution in x (design var)
+ftrue = pc.ftrue;           % True solution in f (objective function var)
+
+
+%% SURROGATE MODELING-BASED OPTIMIZATION
 
 %=== BEGIN: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ==========
-% Command window output
-fprintf('Iter        xopt(1)        xopt(2)           fopt\n');
-% Figures for plot (Plot only once before getting into the main loop)
-plotfn_00;                  % Plot preparation
-plotfn_10;                  % Plot true solution
+    outputfn_00;            % Command window output for printing header
+    plotfn_00;              % Plot preparation
+    plotfn_10;              % Plot true solution
 %=== END: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ============
 
 % Loop for adaptive model refinement
@@ -116,17 +134,29 @@ while (k <= maxiter)
     
 %=== BEGIN: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ==========
     % Command window output
-    fprintf('%4d   ',k);
-    fprintf('%12.4e   %12.4e   ',xopt);
-    fprintf('%12.4e   \n',fopt);
-    % Plot per each iteration
-    plotfn_20;
-    % Export plot?
-    plotfn_exp;
+    outputfn_10;            % Command window output per each iteration
+    plotfn_20;              % Plot per each iteration
+    plotfn_exp10;           % Export plot
 %=== END: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ============
     
     % Next iteration
     xoptold = xopt;
-    xrange = fs_g * xrange; % Reduce sampling range with shrink factor
+    xrange = pc.fs_g * xrange; % Reduce sampling range with shrink factor
     k = k + 1;
 end
+
+
+%% GRADIENT-BASED OPTIMIZATION FOR COMPARISON
+
+[xoptfminunc,foptfminunc,exfminunc,outpfminunc] ...
+    = fminunc(@(x)objfn(x),x0,optfminunc);
+distfminunc = norm(xoptfminunc - xtrue);
+errfminunc = norm(foptfminunc - ftrue);
+
+%=== BEGIN: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ==========
+    outputfn_20;            % Command window output for fminunc
+    plotfn_30;
+    plotfn_exp20;
+%=== END: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ============
+
+

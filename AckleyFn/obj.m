@@ -2,9 +2,9 @@
 % A modular code for teaching Surrogate Modeling-Based Optimization
 % Author: Yong Hoon Lee (ylee196@illinois.edu)
 %==========================================================================
-% Objective Function for the Scaled Goldstein Price Function Problem
+% Objective Function for the Ackley Function Problem
 %==========================================================================
-% Known Solution is: f([0,-1]) = log(3)
+% Known Solution is: f([0,0]) = 0
 %==========================================================================
 %
 % f = OBJ(x)
@@ -12,8 +12,10 @@
 %   x: Design Variables
 
 function f = obj(x)
-    f = log((1 + (x(1) + x(2) + 1)^2 ...
-        * (19 - 14*x(1) + 3*x(1)^2 - 14*x(2) + 6*x(1)*x(2) + 3*x(2)^2)) ...
-        * (30 + (2*x(1) - 3*x(2))^2 ...
-        * (18 - 32*x(1) + 12*x(1)^2 + 48*x(2) - 36*x(1)*x(2) + 27*x(2)^2)));
+    a = 20;
+    b = 0.2;
+    c = 2*pi;
+    d = 2;
+    f = -a*exp(-b*sqrt(1/d*sum(x.^2))) ...
+        - exp(1/d*sum(cos(c*x))) + a + exp(1);
 end

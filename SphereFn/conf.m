@@ -9,9 +9,10 @@
 %   pc: Structured Data Containing Problem Configurations
 
 function pc = conf()
-    pc.nvar = 2;
-    pc.lb = [-100,-100];
-    pc.ub = [500,200];
-    pc.xtrue = [0,0];
-    pc.ftrue = 0;
+    pc.nvar = 2;                % Number of variables
+    pc.lb = [-100,-100];        % Lower bounds
+    pc.ub = [500,200];          % Upper bounds
+    pc.fs_g = 0.4;              % Shrink factor for global sample range
+    pc.xtrue = [0,0];           % True soltuion in x (for comparison)
+    pc.ftrue = 0;               % True solution in f (for comparison)
 end
