@@ -12,9 +12,10 @@ clear; close all; rng(100);
 restoredefaultpath; path(path,fullfile(pwd,'export_fig'));
 
 % Problem to be solved
-prob = 'ScaledGoldsteinPriceFn';          % PROBLEM DIRECTORY NAME
+prob = 'AckleyFn'; % PROBLEM DIRECTORY NAME
                             % Use one of following predefined problems:
                             %   prob = 'AckleyFn';
+                            %   prob = 'RosenbrockBananaFn';
                             %   prob = 'McCormickFn';
                             %   prob = 'SphereFn';
                             %   prob = 'GoldsteinPriceFn';
@@ -41,7 +42,7 @@ optfminunc.Display = 'none';
 optfminunc.FiniteDifferenceType = 'central';
 optfminunc.OptimalityTolerance = 1e-9;
 optfminunc.StepTolerance = 1e-9;
-optfminunc.MaxIterations = maxiter*n_smp;
+optfminunc.MaxFunctionEvaluations = maxiter*n_smp;
 
 % Save current (parent) directory and problem (sub) directory paths
 currentpath = pwd;
@@ -148,10 +149,18 @@ end
 
 %% GRADIENT-BASED OPTIMIZATION FOR COMPARISON
 
-[xoptfminunc,foptfminunc,exfminunc,outpfminunc] ...
+% Try with the same number of maximum function evaluations
+[xoptfminunc1,foptfminunc1,exfminunc1,outpfminunc1] ...
     = fminunc(@(x)objfn(x),x0,optfminunc);
-distfminunc = norm(xoptfminunc - xtrue);
-errfminunc = norm(foptfminunc - ftrue);
+distfminunc1 = norm(xoptfminunc1 - xtrue);
+errfminunc1 = norm(foptfminunc1 - ftrue);
+
+% Try with increased number of maximum function evaluations
+optfminunc.MaxFunctionEvaluations = 2*optfminunc.MaxFunctionEvaluations;
+[xoptfminunc2,foptfminunc2,exfminunc2,outpfminunc2] ...
+    = fminunc(@(x)objfn(x),x0,optfminunc);
+distfminunc2 = norm(xoptfminunc2 - xtrue);
+errfminunc2 = norm(foptfminunc2 - ftrue);
 
 %=== BEGIN: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ==========
     outputfn_20;            % Command window output for fminunc

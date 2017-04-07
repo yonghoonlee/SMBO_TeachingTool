@@ -10,9 +10,9 @@
 
 function pc = conf()
     pc.nvar = 2;                % Number of variables
-    pc.lb = [-10,-2];           % Lower bounds
-    pc.ub = [40,10];             % Upper bounds
-    pc.fs_g = 0.6;             % Shrink factor for global sample range
-    pc.xtrue = [0,0];           % True soltuion in x (for comparison)
+    pc.lb = [-2,-1];            % Lower bounds
+    pc.ub = [2,3];              % Upper bounds
+    pc.fs_g = 0.86;             % Shrink factor for global sample range
+    pc.xtrue = [1,1];           % True soltuion in x (for comparison)
     pc.ftrue = 0;               % True solution in f (for comparison)
 end
