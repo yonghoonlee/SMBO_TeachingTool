@@ -10,9 +10,12 @@ fprintf('                                  GRADIENT-BASED OPTIMIZATION          
 fprintf('----------------------------------------------------------------------------------------------\n');
 fprintf('             xopt_1         xopt_2           fopt    func eval #       distance          error\n');
 fprintf('       ------------   ------------   ------------   ------------   ------------   ------------\n');
+fprintf('       %12.4e   %12.4e   ',xoptfminunc0);
+fprintf('%12.4e   %12d   ',foptfminunc0,outpfminunc0.funcCount);
+fprintf('%12.4e   %12.4e   \n',distfminunc0,errfminunc0);
 fprintf('       %12.4e   %12.4e   ',xoptfminunc1);
 fprintf('%12.4e   %12d   ',foptfminunc1,outpfminunc1.funcCount);
 fprintf('%12.4e   %12.4e   \n',distfminunc1,errfminunc1);
 fprintf('       %12.4e   %12.4e   ',xoptfminunc2);
-fprintf('%12.4e   %12d   ',foptfminunc2,outpfminunc1.funcCount + outpfminunc2.funcCount);
+fprintf('%12.4e   %12d   ',foptfminunc2,outpfminunc2.funcCount);
 fprintf('%12.4e   %12.4e   \n',distfminunc2,errfminunc2);

@@ -12,14 +12,28 @@ clear; close all; rng(100);
 restoredefaultpath; path(path,fullfile(pwd,'export_fig'));
 
 % Problem to be solved
-prob = 'AckleyFn'; % PROBLEM DIRECTORY NAME
+prob = 'ScaledGoldsteinPriceFn'; % PROBLEM DIRECTORY NAME
                             % Use one of following predefined problems:
-                            %   prob = 'AckleyFn';
-                            %   prob = 'RosenbrockBananaFn';
-                            %   prob = 'McCormickFn';
-                            %   prob = 'SphereFn';
-                            %   prob = 'GoldsteinPriceFn';
-                            %   prob = 'ScaledGoldsteinPriceFn';
+                            % 1. prob = 'AckleyFn';
+                            %       fminunc cannot converge to soln
+                            %       while SMBO converges to the soln
+                            % 2. prob = 'RosenbrockBananaFn';
+                            %       fminunc demands many fn evaluations
+                            %       and SMBO has difficulty in finding soln
+                            % 3. prob = 'McCormickFn';
+                            %       easy for both fminunc and SMBO
+                            % 4. prob = 'McCormickDifferentRangeFn';
+                            %       fminunc converges to local soln
+                            %       while SMBO converges to global soln
+                            % 5. prob = 'SphereFn';
+                            %       SMBO converges faster in first few iter
+                            %       and fminunc converges faster for later
+                            % 6. prob = 'GoldsteinPriceFn';
+                            %       SMBO has difficulty in finding soln
+                            %       while fminunc is relatively efficient
+                            % 7. prob = 'ScaledGoldsteinPriceFn';
+                            %       fminunc converges to local soln
+                            %       while SMBO converges to global soln
                             % Or you can easily generate your own problem
                             % by creating a directory and put objective and
                             % configuration files: 'obj.m' & 'conf.m'
@@ -42,7 +56,6 @@ optfminunc.Display = 'none';
 optfminunc.FiniteDifferenceType = 'central';
 optfminunc.OptimalityTolerance = 1e-9;
 optfminunc.StepTolerance = 1e-9;
-optfminunc.MaxFunctionEvaluations = maxiter*n_smp;
 
 % Save current (parent) directory and problem (sub) directory paths
 currentpath = pwd;
@@ -149,14 +162,22 @@ end
 
 %% GRADIENT-BASED OPTIMIZATION FOR COMPARISON
 
+% Try with the half number of maximum function evaluations
+optfminunc.MaxFunctionEvaluations = round(maxiter*n_smp/4);
+[xoptfminunc0,foptfminunc0,exfminunc0,outpfminunc0] ...
+    = fminunc(@(x)objfn(x),x0,optfminunc);
+distfminunc0 = norm(xoptfminunc0 - xtrue);
+errfminunc0 = norm(foptfminunc0 - ftrue);
+
 % Try with the same number of maximum function evaluations
+optfminunc.MaxFunctionEvaluations = round(maxiter*n_smp/2);
 [xoptfminunc1,foptfminunc1,exfminunc1,outpfminunc1] ...
     = fminunc(@(x)objfn(x),x0,optfminunc);
 distfminunc1 = norm(xoptfminunc1 - xtrue);
 errfminunc1 = norm(foptfminunc1 - ftrue);
 
 % Try with increased number of maximum function evaluations
-optfminunc.MaxFunctionEvaluations = 2*optfminunc.MaxFunctionEvaluations;
+optfminunc.MaxFunctionEvaluations = maxiter*n_smp;
 [xoptfminunc2,foptfminunc2,exfminunc2,outpfminunc2] ...
     = fminunc(@(x)objfn(x),x0,optfminunc);
 distfminunc2 = norm(xoptfminunc2 - xtrue);
