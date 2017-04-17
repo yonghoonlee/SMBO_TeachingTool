@@ -27,7 +27,10 @@ set(cbarpred,'Color',[1 1 1]);
 % Plot optimal point
 axes(fh1);
 pl12 = plot(xopt(1),xopt(2),'ok');
-if (k>1) plot([xoptold(1),xopt(1)],[xoptold(2),xopt(2)],'-k'); end;
+if (k>1)
+    plot([xopt_history{k-1}(1),xopt(1)],...
+        [xopt_history{k-1}(2),xopt(2)],'-k');
+end
 % Plot distance and error
 axes(fh4);
 pl41 = semilogy(k,norm(xopt - xtrue),'ko'); hold on;
@@ -36,33 +39,33 @@ pl51 = semilogy(k,norm(fopt - ftrue),'ko'); hold on;
 pl52 = semilogy(k,norm(fopt - f_hf_opt),'kx'); hold on;
 % Plot labels and legends
 axes(fh1);
-xlabel('$x_1$','Interpreter','latex','FontSize',12);
-ylabel('$x_2$','Interpreter','latex','FontSize',12);
-title('Predicted solution trajectory','Interpreter','latex','FontSize',12);
+xlabel('$x_1$','Interpreter','latex','FontSize',14);
+ylabel('$x_2$','Interpreter','latex','FontSize',14);
+title('Predicted solution trajectory','Interpreter','latex','FontSize',14);
 legend([pl11,pl12],{['Samples (',num2str(size(fsmp,1)),' generated)'],...
     'Predicted solution'},...
-    'Interpreter','latex','FontSize',10);
+    'Interpreter','latex','FontSize',14);
 axis([pc.lb(1),pc.ub(1),pc.lb(2),pc.ub(2)]);
 axes(fh2);
-xlabel('$x_1$','Interpreter','latex','FontSize',12);
-ylabel('$x_2$','Interpreter','latex','FontSize',12);
-title('Predicted response','Interpreter','latex','FontSize',12);
+xlabel('$x_1$','Interpreter','latex','FontSize',14);
+ylabel('$x_2$','Interpreter','latex','FontSize',14);
+title('Predicted response','Interpreter','latex','FontSize',14);
 axis([pc.lb(1),pc.ub(1),pc.lb(2),pc.ub(2)]);
 axes(fh3);
-xlabel('$x_1$','Interpreter','latex','FontSize',12);
-ylabel('$x_2$','Interpreter','latex','FontSize',12);
-title('True response','Interpreter','latex','FontSize',12);
+xlabel('$x_1$','Interpreter','latex','FontSize',14);
+ylabel('$x_2$','Interpreter','latex','FontSize',14);
+title('True response','Interpreter','latex','FontSize',14);
 axis([pc.lb(1),pc.ub(1),pc.lb(2),pc.ub(2)]);
 axes(fh4);
-xlabel('iteration','Interpreter','latex','FontSize',12);
-ylabel('distance','Interpreter','latex','FontSize',12);
+xlabel('iteration','Interpreter','latex','FontSize',14);
+ylabel('distance','Interpreter','latex','FontSize',14);
 legend([pl41],{'$||x_{\mathrm{predicted}} - x_{\mathrm{true}}||$'},...
-    'Interpreter','latex','FontSize',10,'Location','northoutside');
-title('Distance to true solution','Interpreter','latex','FontSize',12);
+    'Interpreter','latex','FontSize',14,'Location','northoutside');
+title('Distance to true solution','Interpreter','latex','FontSize',14);
 axes(fh5);
-xlabel('iteration','Interpreter','latex','FontSize',12);
-ylabel('error','Interpreter','latex','FontSize',12);
+xlabel('iteration','Interpreter','latex','FontSize',14);
+ylabel('error','Interpreter','latex','FontSize',14);
 legend([pl51,pl52],{'$||f_{\mathrm{predicted}} - f_{\mathrm{true}}||$',...
     '$||f_{\mathrm{predicted}} - f_{\mathrm{hi-fi\; fn}}||$'},...
-    'Interpreter','latex','FontSize',10,'Location','northoutside');
-title('Error','Interpreter','latex','FontSize',12);
+    'Interpreter','latex','FontSize',14,'Location','northoutside');
+title('Error','Interpreter','latex','FontSize',14);

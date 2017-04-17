@@ -11,5 +11,5 @@ if (export_plot == true)
         '.png -png -r300']);
 else
     % Without exporting figure, we need to pause to see the change here
-    pause(1); % To see the change in real time, pause 1 sec.
+    pause(0.1); % To see the change in real time, pause 0.1 sec.
 end

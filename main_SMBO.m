@@ -8,11 +8,11 @@
 
 %% PREPARATION
 
-clear; close all; rng(100);
+clc; clear; close all; rng(100);
 restoredefaultpath; path(path,fullfile(pwd,'export_fig'));
 
 % Problem to be solved
-prob = 'ScaledGoldsteinPriceFn'; % PROBLEM DIRECTORY NAME
+prob = 'AckleyFn'; % PROBLEM DIRECTORY NAME
                             % Use one of following predefined problems:
                             % 1. prob = 'AckleyFn';
                             %       fminunc cannot converge to soln
@@ -39,11 +39,12 @@ prob = 'ScaledGoldsteinPriceFn'; % PROBLEM DIRECTORY NAME
                             % configuration files: 'obj.m' & 'conf.m'
 
 % User parameter
-export_plot = true;         % Export plot file
+export_plot = true;        % Export plot file
+visualization_on = true;    % Set to true to turn on visualization 
 
 % Surrogate model-based optimization options
-maxiter = 20;               % Number of maximum iteration
-n_smp = 4;                  % Number of samples per each iteration
+maxiter = 20;               % Maximum number of iterations allowed
+n_smp = 4;                  % Number of samples for each iteration
 m.sampling = 'LHS';         % Sampling method: LHS, FF, Random, User
 m.surrogate = 'TPS-RBF';    % Surrogate modeling method: TPS-RBF, User
 opt = optimoptions('ga');   % Genetic algorithm is used for minimization
@@ -71,28 +72,30 @@ cd(currentpath);            % Return to the root directory
 pc = feval(conffn);
 
 % Assumption of solution (initial value) for sample distribution
-xrange = (pc.ub - pc.lb)/2; % Half of the design space
-x0 = pc.lb + xrange;        % Middle point between lower & upper bounds
+xrange = (pc.ub - pc.lb)/2; % Half of the design space for each dimension
+                            % These bounds are for specifying the design
+                            % and modeling domain.
+x0 = pc.lb + xrange;        % Midpoint between lower and upper bounds
 xopt = x0;                  % First guess is equivalent to the init value
 
-% Retrieve trues soltuion for comparison
-xtrue = pc.xtrue;           % True solution in x (design var)
-ftrue = pc.ftrue;           % True solution in f (objective function var)
+% Retrieve true solution for comparison
+xtrue = pc.xtrue;           % True solution x (design var)
+ftrue = pc.ftrue;           % True solution f(x) (objective function var)
 
 
 %% SURROGATE MODELING-BASED OPTIMIZATION
 
-%=== BEGIN: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ==========
+if visualization_on
     outputfn_00;            % Command window output for printing header
     plotfn_00;              % Plot preparation
     plotfn_10;              % Plot true solution
-%=== END: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ============
+end
 
-% Loop for adaptive model refinement
+% Adaptive surrogate model refinement loop
 k = 1;                      % Iteration number
 while (k <= maxiter)
-    % ==== SAMPLING IN DESIGN SPACE ====
-    % Generating samples in [0,1] space
+    % ==== DESIGN SPACE SAMPLING ====
+    % Generate samples in the range [0,1] (scaled space)
     switch(m.sampling)
         case 'LHS'          % Latin hypercube sampling
             xsmp01 = lhsdesign(n_smp, pc.nvar);
@@ -103,90 +106,104 @@ while (k <= maxiter)
             xsmp01 = rand(n_smp, pc.nvar);
         case 'User'         % User-defined sampling method
             % Please write your own sampling method here:
-            % xsamp = ...
+            % xsmp01 = ...
     end
-    % Scaling samples to fill the space of exploration
-    xs_g = 2*(xsmp01 - 0.5); % Scale samples from [0,1] to [-1,1] space
+    
+    % Scale sample points to original design space range
+    xs_g = 2*(xsmp01 - 0.5);    % Scale samples from [0,1] to [-1,1]
     xs_g = repmat(xopt,n_smp,1) + xs_g.*repmat(xrange,n_smp,1);
-    % Enforce samples within bounds
-    for i = 1:pc.nvar       % For each design variable
+                                % Scale from [-1,1] to [lb,ub]
+    % Ensure that samples lie within bounds
+    for i = 1:pc.nvar       % Loop over each design variable
         xsampcol = xs_g(:,i);
         xsampcol(xsampcol>pc.ub(i)) = pc.ub(i); % Upper bound enforcement
         xsampcol(xsampcol<pc.lb(i)) = pc.lb(i); % Lower bound enforcement
         xs_g(:,i) = xsampcol; clear xsampcol;
     end
     % Save samples
-    x_sample{k} = xs_g; clear xsamp;
+    x_sample{k} = xs_g; clear xsmp01;
     
     % ==== HIGH FIDELITY MODEL EVALUATION ====
-    % Run objective function for each generated sample point
+    % Execute original objective function calculation for each sample point
     f_hf{k} = zeros(n_smp,1);
-    for i = 1:n_smp
+    for i = 1:n_smp     % If objfn is computationally expensive, this is 
+                        % the most computationally intensive step.
         f_hf{k}(i) = feval(objfn,x_sample{k}(i,:));
     end
     
     % ==== SURROGATE MODELING-BASED OPTIMIZATION ====
-    % Compiling known design points and high fidelity function results
-    xs_g = []; fsmp = [];
-    for i = 1:k
-        xs_g = [xs_g; x_sample{i}];
-        fsmp = [fsmp; f_hf{i}];
+    % Compile design points (past and current samples) along with high
+    % fidelity function results:
+    xs_g = x_sample{1};     % For first iteration, we only have sample pts
+    fsmp = f_hf{1};         % and its high fidelity function results
+    if (k>1)
+        for i = 2:k
+            xs_g = [xs_g; x_sample{i}; xopt_history{i-1}];
+            fsmp = [fsmp; f_hf{i}; f_hf_opt_history{i-1}];
+        end
     end
+    
     % Surrogate model construction and optimization run
     switch(m.surrogate)
-        case 'TPS-RBF'      % Radial-Basis Function with TPS basis fn
-            % Construct a RBF model using thin plate spline function
+        case 'TPS-RBF'      % Radial-Basis Function (Thin-Plate Spline)
+            % Construct an RBF model using thin plate spline function
             [weight,center] = tps_rbf_construct(xs_g,fsmp);
             % Run GA-based optimization using the surrogate model
             [xopt,fopt] = ga(@(x)tps_rbf_objfn(x,weight,center),pc.nvar,...
                 [],[],[],[],pc.lb,pc.ub,[],opt);
         case 'User'         % User-defined surrogate modeling method
-            % Please write your own surrogate modeling method here:
+            % Please write your own surrogate modeling-based optimization
+            % method here:
+            % [xopt,fopt] = ...
     end
-    % High fidelity solution for validation purpose
+    
+    % Evaluate the high fidelity function to evaluate error at the
+    % predicted optimum (model validation, only at solution):
     f_hf_opt = objfn(xopt);
     
-%=== BEGIN: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ==========
-    % Command window output
-    outputfn_10;            % Command window output per each iteration
-    plotfn_20;              % Plot per each iteration
-    plotfn_exp10;           % Export plot
-%=== END: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ============
+    % Save the high fidelity function result at the predicted optimum
+    xopt_history{k} = xopt;
+    f_hf_opt_history{k} = f_hf_opt;
     
-    % Next iteration
-    xoptold = xopt;
-    xrange = pc.fs_g * xrange; % Reduce sampling range with shrink factor
-    k = k + 1;
+    if visualization_on
+        outputfn_10;        % Command window output per each iteration
+        plotfn_20;          % Plot per each iteration
+        plotfn_exp10;       % Export plot
+    end
+    
+    % Calculations for next iteration
+    xrange = pc.fs_g * xrange;  % Reduce sampling range with a factor < 1
+    k = k + 1;                  % Increment iteration number
 end
 
 
 %% GRADIENT-BASED OPTIMIZATION FOR COMPARISON
 
 % Try with the half number of maximum function evaluations
-optfminunc.MaxFunctionEvaluations = round(maxiter*n_smp/4);
+optfminunc.MaxFunctionEvaluations = round((maxiter*(n_smp+1)-1)/4);
 [xoptfminunc0,foptfminunc0,exfminunc0,outpfminunc0] ...
     = fminunc(@(x)objfn(x),x0,optfminunc);
 distfminunc0 = norm(xoptfminunc0 - xtrue);
 errfminunc0 = norm(foptfminunc0 - ftrue);
 
 % Try with the same number of maximum function evaluations
-optfminunc.MaxFunctionEvaluations = round(maxiter*n_smp/2);
+optfminunc.MaxFunctionEvaluations = round((maxiter*(n_smp+1)-1)/2);
 [xoptfminunc1,foptfminunc1,exfminunc1,outpfminunc1] ...
     = fminunc(@(x)objfn(x),x0,optfminunc);
 distfminunc1 = norm(xoptfminunc1 - xtrue);
 errfminunc1 = norm(foptfminunc1 - ftrue);
 
 % Try with increased number of maximum function evaluations
-optfminunc.MaxFunctionEvaluations = maxiter*n_smp;
+optfminunc.MaxFunctionEvaluations = (maxiter*(n_smp+1)-1);
 [xoptfminunc2,foptfminunc2,exfminunc2,outpfminunc2] ...
     = fminunc(@(x)objfn(x),x0,optfminunc);
 distfminunc2 = norm(xoptfminunc2 - xtrue);
 errfminunc2 = norm(foptfminunc2 - ftrue);
 
-%=== BEGIN: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ==========
+if visualization_on
     outputfn_20;            % Command window output for fminunc
     plotfn_30;
     plotfn_exp20;
-%=== END: IGNORE THIS BOX IF VISUALIZATION IS NOT YOUR CONCERN ============
+end
 
 
