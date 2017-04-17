@@ -39,7 +39,7 @@ prob = 'AckleyFn'; % PROBLEM DIRECTORY NAME
                             % configuration files: 'obj.m' & 'conf.m'
 
 % User parameter
-export_plot = true;        % Export plot file
+export_plot = false;        % Export plot file
 visualization_on = true;    % Set to true to turn on visualization 
 
 % Surrogate model-based optimization options
