@@ -68,15 +68,19 @@ University of Illinois at Urbana-Champaign
 
 * Conventional Optimization
 
-<a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{x}^*=\underset{\mathbf{x}\in&space;R^n}{\arg\min}&space;U\left(\mathbf{f}\left(\mathbf{x}&space;\right&space;)&space;\right&space;)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\mathbf{x}^*=\underset{\mathbf{x}\in&space;R^n}{\text{argmin}}\;&space;U\left(\mathbf{f}\left(\mathbf{x}&space;\right&space;)&space;\right&space;)" title="\mathbf{x}^*=\underset{\mathbf{x}\in R^n}{\arg\min} U\left(\mathbf{f}\left(\mathbf{x} \right ) \right )" /></a>
-
-![Flow chart of the conventional optimization algorithm](images/flow-conventional.png "Conventional Optimization Algorithm")
+  <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{x}^*=\underset{\mathbf{x}\in&space;R^n}{\arg\min}&space;U\left(\mathbf{f}\left(\mathbf{x}&space;\right&space;)&space;\right&space;)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\mathbf{x}^*=\underset{\mathbf{x}\in&space;R^n}{\text{argmin}}\;&space;U\left(\mathbf{f}\left(\mathbf{x}&space;\right&space;)&space;\right&space;)" title="\mathbf{x}^*=\underset{\mathbf{x}\in R^n}{\arg\min} U\left(\mathbf{f}\left(\mathbf{x} \right ) \right )" /></a>
+    
+  <img alt="Flow chart of the conventional optimization algorithm" src="images/flow-conventional.png" width="300">
+    
+  Koziel, S. and Leifsson, L. (2016)
 
 * Surrogate-Based Optimization
 
-<a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{x}^{i&plus;1}=\underset{\mathbf{x}\in&space;R^n}{\text{argmin}}\;&space;U\left(\mathbf{s}^i\left(\mathbf{x}&space;\right&space;)&space;\right&space;)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\mathbf{x}^{i&plus;1}=\underset{\mathbf{x}\in&space;R^n}{\text{argmin}}\;&space;U\left(\mathbf{s}^i\left(\mathbf{x}&space;\right&space;)&space;\right&space;)" title="\mathbf{x}^{i+1}=\underset{\mathbf{x}\in R^n}{\text{argmin}}\; U\left(\mathbf{s}^i\left(\mathbf{x} \right ) \right )" /></a>
-
-![Flow chart of the surrogate-based optimization algorithm](images/flow-surrogatebased.png "Surrogate-Based Optimization Algorithm")
+  <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{x}^{i&plus;1}=\underset{\mathbf{x}\in&space;R^n}{\text{argmin}}\;&space;U\left(\mathbf{s}^i\left(\mathbf{x}&space;\right&space;)&space;\right&space;)" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\mathbf{x}^{i&plus;1}=\underset{\mathbf{x}\in&space;R^n}{\text{argmin}}\;&space;U\left(\mathbf{s}^i\left(\mathbf{x}&space;\right&space;)&space;\right&space;)" title="\mathbf{x}^{i+1}=\underset{\mathbf{x}\in R^n}{\text{argmin}}\; U\left(\mathbf{s}^i\left(\mathbf{x} \right ) \right )" /></a>
+    
+  <img alt="Flow chart of the surrogate-based optimization algorithm" src="images/flow-surrogatebased.png" width="350">
+    
+  Koziel, S. and Leifsson, L. (2016)
 
 > <a href="https://www.codecogs.com/eqnedit.php?latex=U" target="_blank"><img src="https://latex.codecogs.com/svg.latex?U" title="U" /></a>: utility function, which is a scalar value
 >
