@@ -88,3 +88,40 @@ University of Illinois at Urbana-Champaign
 >
 > In this code, we are only looking at a single-objective optimization problem.
 If the problem has multiple objective functions, the utility function can be formulated for the SMBO tool, which is developed for single-objective problem.
+
+## Surrogate model construction flow
+
+<img alt="A construction of the surrogate model" src="images/flow-update-surrogate.png" width="800">
+
+## Pseudo-code explaination with line numbers
+
+```
+While-loop: Adaptive surrogate modeling refinement (Line 94-177)
+    Design Space Sampling (Line 97-124)
+    High Fidelity Model Evaluation (Line 126-132)
+    Surrogate Modeling-Based Optimization (Line 134-176)
+        Compile results of (1) Current and (2) Previous iterations (Line 135-144)
+        Surrogate-model construction / Surrogate-based optimization (Line 146-158)
+    Error evaluation using high fidelity model (Line 160-172)
+        Run high fidelity model evaluation for predicted optimum (Line 161-162)
+        Save high fidelity function result at the predicted optimum (Line 164-166)
+    Adjust sampling range for the next iteration (Line 174-176)
+End while
+```
+
+*----------------README.md file not completed yet----------------*
+
+
+### Sampling: Space-filling DoE (Line 97-124)
+
+### High fidelity response of training points (Line 126-132)
+
+### Compile results of current and previous iterations to construct surrogate model (Line 135-144)
+
+### Surrogate-model construction / Surrogate-based optimization (Line 146-158)
+
+#### Radial Basis Function
+
+### Error evaluation using high fidelity model (Line 160-172)
+
+### Adjust sampling range for the next iteration (Line 174-176)
