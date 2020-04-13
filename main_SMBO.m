@@ -12,7 +12,7 @@ clc; clear; close all; rng(100);
 restoredefaultpath; path(path,fullfile(pwd,'export_fig'));
 
 % Problem to be solved
-prob = 'McCormickDifferentRangeFn'; % PROBLEM DIRECTORY NAME
+prob = 'AckleyFn'; % PROBLEM DIRECTORY NAME
                             % Use one of following predefined problems:
                             % 1. prob = 'AckleyFn';
                             %       fminunc cannot converge to soln
