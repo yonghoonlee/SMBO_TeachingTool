@@ -15,6 +15,7 @@ for j = 1:101
     end
 end
 [~,ctrtrue] = contourf(XMG,YMG,ZMG,50); hold on;
+ctrtrue.LineStyle = 'none';
 plot(pc.xtrue(1),pc.xtrue(2),'o','MarkerFaceColor',[1 1 1],'Color','none');
 cbartrue = colorbar('east');
 set(cbartrue,'Position',[0.56,0.2,0.01,0.25]);
