@@ -19,6 +19,7 @@ for j = 1:101
     ZMG(:,j) = tps_rbf_objfn([XMG(:,j),YMG(:,j)],weight,center);
 end
 [~,ctrpred] = contourf(XMG,YMG,ZMG,50); hold on;
+ctrpred.LineStyle = 'none';
 plot(xopt(1),xopt(2),'o','MarkerFaceColor',[1 1 1],'Color','none');
 %set(ctrpred,'LevelList',ctrlvl);
 cbarpred = colorbar('east');
