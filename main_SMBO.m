@@ -12,7 +12,7 @@ clc; clear; close all; rng(100);
 restoredefaultpath; path(path,fullfile(pwd,'export_fig'));
 
 % Problem to be solved
-prob = 'AckleyFn'; % PROBLEM DIRECTORY NAME
+prob = 'McCormickDifferentRangeFn'; % PROBLEM DIRECTORY NAME
                             % Use one of following predefined problems:
                             % 1. prob = 'AckleyFn';
                             %       fminunc cannot converge to soln
@@ -52,11 +52,11 @@ opt.Display = 'none';       % No display after GA run
 opt.UseVectorized = true;   % Vectorized evaluation on the surrogate model
 
 % Gradient-based optimization options (for comparison)
-optfminunc = optimoptions('fminunc');
-optfminunc.Display = 'none';
-optfminunc.FiniteDifferenceType = 'central';
-optfminunc.OptimalityTolerance = 1e-9;
-optfminunc.StepTolerance = 1e-9;
+optfmincon = optimoptions('fmincon');
+optfmincon.Display = 'none';
+optfmincon.FiniteDifferenceType = 'central';
+optfmincon.OptimalityTolerance = 1e-9;
+optfmincon.StepTolerance = 1e-9;
 
 % Save current (parent) directory and problem (sub) directory paths
 currentpath = pwd;
@@ -180,25 +180,25 @@ end
 %% GRADIENT-BASED OPTIMIZATION FOR COMPARISON
 
 % Try with the half number of maximum function evaluations
-optfminunc.MaxFunctionEvaluations = round((maxiter*(n_smp+1)-1)/4);
-[xoptfminunc0,foptfminunc0,exfminunc0,outpfminunc0] ...
-    = fminunc(@(x)objfn(x),x0,optfminunc);
-distfminunc0 = norm(xoptfminunc0 - xtrue);
-errfminunc0 = norm(foptfminunc0 - ftrue);
+optfmincon.MaxFunctionEvaluations = round((maxiter*(n_smp+1)-1)/4);
+[xoptfmincon0,foptfmincon0,exfmincon0,outpfmincon0] ...
+    = fmincon(@(x)objfn(x),x0,[],[],[],[],pc.lb,pc.ub,[],optfmincon);
+distfmincon0 = norm(xoptfmincon0 - xtrue);
+errfmincon0 = norm(foptfmincon0 - ftrue);
 
 % Try with the same number of maximum function evaluations
-optfminunc.MaxFunctionEvaluations = round((maxiter*(n_smp+1)-1)/2);
-[xoptfminunc1,foptfminunc1,exfminunc1,outpfminunc1] ...
-    = fminunc(@(x)objfn(x),x0,optfminunc);
-distfminunc1 = norm(xoptfminunc1 - xtrue);
-errfminunc1 = norm(foptfminunc1 - ftrue);
+optfmincon.MaxFunctionEvaluations = round((maxiter*(n_smp+1)-1)/2);
+[xoptfmincon1,foptfmincon1,exfmincon1,outpfmincon1] ...
+    = fmincon(@(x)objfn(x),x0,[],[],[],[],pc.lb,pc.ub,[],optfmincon);
+distfmincon1 = norm(xoptfmincon1 - xtrue);
+errfmincon1 = norm(foptfmincon1 - ftrue);
 
 % Try with increased number of maximum function evaluations
-optfminunc.MaxFunctionEvaluations = (maxiter*(n_smp+1)-1);
-[xoptfminunc2,foptfminunc2,exfminunc2,outpfminunc2] ...
-    = fminunc(@(x)objfn(x),x0,optfminunc);
-distfminunc2 = norm(xoptfminunc2 - xtrue);
-errfminunc2 = norm(foptfminunc2 - ftrue);
+optfmincon.MaxFunctionEvaluations = (maxiter*(n_smp+1)-1);
+[xoptfmincon2,foptfmincon2,exfmincon2,outpfmincon2] ...
+    = fmincon(@(x)objfn(x),x0,[],[],[],[],pc.lb,pc.ub,[],optfmincon);
+distfmincon2 = norm(xoptfmincon2 - xtrue);
+errfmincon2 = norm(foptfmincon2 - ftrue);
 
 if visualization_on
     outputfn_20;            % Command window output for fminunc
